@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sukoon — raat, radio aur thoda sukoon</title>
+<meta name="description" content="Akele raaton ke liye gaane. Hindi aur Haryanvi ke sukoon bhare gaane, live.">
+<meta property="og:title" content="Sukoon">
+<meta property="og:description" content="Akele raaton ke liye gaane. Hindi aur Haryanvi ke sukoon bhare gaane, live.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="sukoon-bg.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Tiro+Devanagari+Hindi:ital@0;1&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="scene-wrapper">
+<div class="scene">
+  <div class="bg-image"></div>
+  <div class="tree-sway"></div>
+  <div class="cloud-extra"></div>
+  <div class="road-light"></div>
+  <div class="road-light r2"></div>
+  <div class="lamp-glow"></div>
+  <div class="steam-wrap">
+    <div class="steam"></div>
+    <div class="steam s2"></div>
+    <div class="steam s3"></div>
+  </div>
+  <div class="bg-overlay"></div>
+
+  <div class="twinkle-layer" id="twinkleLayer"></div>
+
+  <header class="header">
+    <div class="logo-section">
+      <h1 class="title">सुकून</h1>
+      <p class="tagline">raat, radio aur thoda sukoon</p>
+    </div>
+    <div class="live-pill">
+      <span class="dot-live"></span>
+      <span id="listenerCount">41</span> listening
+    </div>
+  </header>
+
+  <main class="shayari-box">
+    <p class="shayari-line" id="shayariLine"></p>
+  </main>
+
+  <p class="credit">Made with <span class="heart">♡</span> by <a href="#" id="creatorHandle">@tumhara_naam</a></p>
+
+  <footer class="songbar" id="songbar">
+    <div class="cover" id="cover"></div>
+    <div class="song-meta">
+      <h3 class="song-name" id="trackName">Tap play to start</h3>
+      <p class="song-artist" id="artistName">Sukoon Radio</p>
+      <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <button class="ctrl-btn" id="prevBtn" aria-label="Previous">
+      <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+    <button class="play-btn" id="playBtn" aria-label="Play">
+      <svg id="playIcon" viewBox="0 0 24 24" fill="#0c1a33"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="ctrl-btn" id="nextBtn" aria-label="Next">
+      <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zm-9.5 6L15 18V6z"/></svg>
+    </button>
+  </footer>
+</div>
+</div>
+
+<div id="player"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

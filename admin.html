@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sukoon Admin</title>
+<style>
+  *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',Arial,sans-serif;}
+  body{ background:#0c1a33; color:#f6f0e2; min-height:100vh; padding:20px; }
+  h1{ font-size:1.4rem; margin-bottom:4px; }
+  .sub{ color:#a7b4c9; font-size:0.85rem; margin-bottom:20px; }
+  .card{ background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:16px; margin-bottom:18px; }
+  .card h2{ font-size:1.05rem; margin-bottom:10px; }
+  .row{ display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  input, textarea{
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+    color:#f6f0e2; padding:9px 10px; border-radius:8px; font-size:0.9rem;
+    flex:1 1 140px;
+  }
+  textarea{ width:100%; min-height:60px; resize:vertical; }
+  button{
+    background:#f0b064; color:#0c1a33; border:none; padding:9px 16px;
+    border-radius:8px; font-weight:600; cursor:pointer; font-size:0.85rem;
+  }
+  button.secondary{ background:rgba(255,255,255,0.1); color:#f6f0e2; }
+  button.danger{ background:#e4736b; color:#1a0c0c; }
+  .item{
+    display:flex; gap:8px; align-items:center; margin-bottom:8px;
+    background:rgba(255,255,255,0.04); padding:8px; border-radius:8px; flex-wrap:wrap;
+  }
+  .item span{ flex:1 1 auto; font-size:0.85rem; word-break:break-word; }
+  #codeOut{
+    width:100%; min-height:220px; background:#070d18; color:#8be08a;
+    font-family:monospace; font-size:0.78rem; padding:12px; border-radius:8px;
+    border:1px solid rgba(255,255,255,0.15); white-space:pre;
+  }
+  #gate{
+    position:fixed; inset:0; background:#05070d; display:flex; align-items:center;
+    justify-content:center; flex-direction:column; gap:14px; z-index:99;
+  }
+  #gate input{ max-width:220px; }
+  .hint{ font-size:0.72rem; color:#8593a8; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>🔒 Sukoon Admin</h1>
+  <input type="password" id="pwInput" placeholder="Password">
+  <button onclick="checkPassword()">Enter</button>
+  <p class="hint">Yeh sirf casual visitors ko rokta hai — asli security nahi hai,<br>kyunki yeh ek static site hai. Password change karne ke liye<br>neeche is file ke andar "MERI_PASSWORD" dhoondo.</p>
+</div>
+
+<div id="panel" style="display:none;">
+  <h1>Sukoon — Admin Panel</h1>
+  <p class="sub">Songs aur shayaris manage karo, phir neeche se code copy karke script.js mein paste karo.</p>
+
+  <div class="card">
+    <h2>🎵 Songs</h2>
+    <div id="songList"></div>
+    <div class="row">
+      <input id="songTitle" placeholder="Song title (e.g. Barsaat)">
+      <input id="songArtist" placeholder="Artist (optional)">
+      <input id="songId" placeholder="YouTube video ID">
+    </div>
+    <button onclick="addSong()">+ Add Song</button>
+    <p class="hint">Video ID = youtube.com/watch?v=<b>YEH_WALA_PART</b></p>
+  </div>
+
+  <div class="card">
+    <h2>✍️ Shayaris</h2>
+    <div id="shayariList"></div>
+    <div class="row">
+      <textarea id="shayariInput" placeholder="Naya shayari line likho. Do lines ke beech &lt;br&gt; use karo."></textarea>
+    </div>
+    <button onclick="addShayari()">+ Add Shayari</button>
+  </div>
+
+  <div class="card">
+    <h2>👤 Creator credit</h2>
+    <div class="row">
+      <input id="creatorInput" placeholder="@tumhara_naam">
+      <button onclick="updateCreator()">Update</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Generated code</h2>
+    <p class="sub">Yeh poora code copy karo aur apne script.js file mein PLAYLIST aur SHAYARIS wale hisse ki jagah paste kar do (GitHub par edit karke, jaisa guide mein bataya hai).</p>
+    <textarea id="codeOut" readonly></textarea>
+    <div class="row" style="margin-top:10px;">
+      <button onclick="copyCode()">Copy Code</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CORRECT_PASSWORD = "MERI_PASSWORD"; // <- ise apne khud ke password se replace karo
+
+  function checkPassword(){
+    const val = document.getElementById('pwInput').value;
+    if(val === CORRECT_PASSWORD){
+      document.getElementById('gate').style.display='none';
+      document.getElementById('panel').style.display='block';
+    } else {
+      alert('Galat password.');
+    }
+  }
+
+  let songs = [
+    { id: "A5G528i-OYY", title: "Kitaab", artist: "Shwet" },
+    { id: "REPLACE_WITH_VIDEO_ID", title: "Barsaat", artist: "" },
+    { id: "REPLACE_WITH_VIDEO_ID", title: "Bairan", artist: "" }
+  ];
+  let shayaris = [
+    "har raat guzar jaati hai,<br>kuch gaane saath reh jaate hain",
+    "akele hone mein bhi ek sukoon hai,<br>khud se milne ka mausam hai",
+    "khamoshi bhi kabhi kabhi<br>sabse achhi dost lagti hai",
+    "chaand akela nahi hota,<br>bas thoda door hota hai",
+    "kuch log akele nahi hote,<br>bas apne saath hote hain"
+  ];
+  let creatorHandle = "@tumhara_naam";
+
+  function renderSongs(){
+    const el = document.getElementById('songList');
+    el.innerHTML = songs.map((s,i)=>`
+      <div class="item">
+        <span><b>${s.title}</b> ${s.artist ? '— '+s.artist : ''}<br><small>${s.id}</small></span>
+        <button class="danger" onclick="removeSong(${i})">Remove</button>
+      </div>`).join('');
+    generateCode();
+  }
+  function addSong(){
+    const title = document.getElementById('songTitle').value.trim();
+    const artist = document.getElementById('songArtist').value.trim();
+    const id = document.getElementById('songId').value.trim() || "REPLACE_WITH_VIDEO_ID";
+    if(!title){ alert('Song title daalo.'); return; }
+    songs.push({id, title, artist});
+    document.getElementById('songTitle').value='';
+    document.getElementById('songArtist').value='';
+    document.getElementById('songId').value='';
+    renderSongs();
+  }
+  function removeSong(i){ songs.splice(i,1); renderSongs(); }
+
+  function renderShayaris(){
+    const el = document.getElementById('shayariList');
+    el.innerHTML = shayaris.map((s,i)=>`
+      <div class="item">
+        <span>${s}</span>
+        <button class="danger" onclick="removeShayari(${i})">Remove</button>
+      </div>`).join('');
+    generateCode();
+  }
+  function addShayari(){
+    const val = document.getElementById('shayariInput').value.trim();
+    if(!val){ alert('Shayari likho.'); return; }
+    shayaris.push(val);
+    document.getElementById('shayariInput').value='';
+    renderShayaris();
+  }
+  function removeShayari(i){ shayaris.splice(i,1); renderShayaris(); }
+
+  function updateCreator(){
+    const val = document.getElementById('creatorInput').value.trim();
+    if(val) creatorHandle = val;
+    generateCode();
+  }
+
+  function generateCode(){
+    const songsCode = songs.map(s => `  { id: "${s.id}", title: "${s.title}", artist: "${s.artist}" }`).join(',\n');
+    const shayarisCode = shayaris.map(s => `  "${s}"`).join(',\n');
+    const code =
+`/* ---- Paste this block over the SHAYARIS array in script.js ---- */
+const shayaris = [
+${shayarisCode}
+];
+
+/* ---- Paste this block over the PLAYLIST array in script.js ---- */
+const playlist = [
+${songsCode}
+];
+
+/* ---- Creator credit: in index.html find id="creatorHandle" and change the text to: ---- */
+${creatorHandle}`;
+    document.getElementById('codeOut').value = code;
+  }
+
+  function copyCode(){
+    const el = document.getElementById('codeOut');
+    el.select();
+    document.execCommand('copy');
+    alert('Code copy ho gaya! Ab script.js mein jaake paste kar do.');
+  }
+
+  renderSongs();
+  renderShayaris();
+</script>
+</body>
+</html>
