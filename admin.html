@@ -11,11 +11,11 @@
   *{ box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif; }
   body{ background:var(--bg); color:#f6f0e2; min-height:100vh; padding:24px 18px 60px; }
   .wrap{ max-width:640px; margin:0 auto; }
-  h1{ font-size:1.5rem; font-weight:700; }
-  .sub{ color:#a7b4c9; font-size:0.88rem; margin-top:4px; margin-bottom:24px; }
-  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; }
-  .card h2{ font-size:1rem; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
-  .card .desc{ color:#8fa0b8; font-size:0.8rem; margin-bottom:14px; }
+  h1{ font-size:1.4rem; font-weight:700; }
+  .sub{ color:#a7b4c9; font-size:0.85rem; margin-top:4px; margin-bottom:24px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:16px; }
+  .card h2{ font-size:0.95rem; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .card .desc{ color:#8fa0b8; font-size:0.78rem; margin-bottom:14px; }
   .row{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   input, textarea{
     background:rgba(255,255,255,0.07); border:1px solid var(--line);
@@ -44,15 +44,14 @@
   .hint{ font-size:0.72rem; color:#7688a0; margin-top:8px; line-height:1.5; }
   #gate{
     position:fixed; inset:0; background:#05070d; display:flex; align-items:center;
-    justify-content:center; flex-direction:column; gap:14px; z-index:99; padding:20px;
+    justify-content:center; flex-direction:column; gap:12px; z-index:99; padding:20px;
   }
-  #gate .lock{ font-size:2.2rem; }
+  #gate .lock{ font-size:1.8rem; opacity:0.7; }
   #gate input{ max-width:260px; text-align:center; }
-  #gate .hint{ text-align:center; max-width:300px; }
   #gateError{ color:#f0a49d; font-size:0.8rem; min-height:1em; }
   .badge{
     display:inline-block; background:rgba(123,224,138,0.15); color:#7be08a;
-    font-size:0.68rem; padding:2px 8px; border-radius:999px; margin-left:6px;
+    font-size:0.65rem; padding:2px 8px; border-radius:999px; margin-left:6px;
   }
   .logout{ background:rgba(255,255,255,0.1); color:#f6f0e2; font-size:0.78rem; padding:6px 14px; margin-bottom:16px; }
 </style>
@@ -61,12 +60,11 @@
 
 <div id="gate">
   <div class="lock">🔒</div>
-  <h1 style="font-size:1.2rem;">Sukoon Admin</h1>
+  <h1 style="font-size:1.1rem;">Sukoon Admin</h1>
   <input type="email" id="emailInput" placeholder="Admin email">
   <input type="password" id="pwInput" placeholder="Password">
   <button onclick="login()">Log In</button>
   <p id="gateError"></p>
-  <p class="hint">This uses real Firebase authentication — your login is verified securely on Google's servers, never stored or visible in this page's code.</p>
 </div>
 
 <div id="panel" style="display:none;">
@@ -101,9 +99,9 @@
 
     <div class="card">
       <h2>👤 Profile</h2>
-      <p class="desc">Your creator credit and Instagram link shown on the site.</p>
+      <p class="desc">Your Spotify playlist and Instagram links shown on the site.</p>
       <div class="row">
-        <input id="creatorInput" placeholder="@yourusername (shown as credit)">
+        <input id="spotifyInput" placeholder="Spotify playlist link">
       </div>
       <div class="row">
         <input id="igInput" placeholder="Instagram link (e.g. https://instagram.com/yourhandle)">
@@ -120,7 +118,7 @@
       </div>
       <p class="hint">
         • The SHAYARIS and PLAYLIST blocks go into <b>script.js</b>, replacing the existing arrays of the same name.<br>
-        • The creator credit line goes into <b>index.html</b> — find id="creatorHandle" and replace the text and href.<br>
+        • The Spotify link goes into <b>index.html</b> — find the first link in the top-links block and replace its href.<br>
         • The Instagram link goes into <b>index.html</b> — find id="igBtn" and replace its href.
       </p>
     </div>
@@ -172,7 +170,7 @@
     "chaand akela nahi hota,<br>bas thoda door hota hai",
     "kuch log akele nahi hote,<br>bas apne saath hote hain"
   ];
-  let creatorHandle = "@tumhara_naam";
+  let spotifyLink = "REPLACE_WITH_SPOTIFY_PLAYLIST_LINK";
   let igLink = "https://instagram.com/tumhara_naam";
 
   function renderSongs(){
@@ -216,9 +214,9 @@
   function removeShayari(i){ shayaris.splice(i,1); renderShayaris(); }
 
   function updateProfile(){
-    const c = document.getElementById('creatorInput').value.trim();
+    const sp = document.getElementById('spotifyInput').value.trim();
     const ig = document.getElementById('igInput').value.trim();
-    if(c) creatorHandle = c;
+    if(sp) spotifyLink = sp;
     if(ig) igLink = ig;
     generateCode();
   }
@@ -237,8 +235,8 @@ const playlist = [
 ${songsCode}
 ];
 
-/* In index.html, find id="creatorHandle" and set: */
-Text: ${creatorHandle}
+/* In index.html, set the Spotify link (first icon-btn in top-links) to: */
+${spotifyLink}
 
 /* In index.html, find id="igBtn" and set the href to: */
 ${igLink}`;

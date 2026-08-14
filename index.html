@@ -20,60 +20,41 @@
 </head>
 <body>
 
-<div class="scene-wrapper" id="sceneWrapper">
-  <div class="scene" id="scene">
-
-    <img class="bg-image" src="sukoon-bg.jpg" alt="Sukoon balcony scene">
-
-    <!-- Living-photo animation layers, all locked to the image's own coordinate space -->
-    <img class="tree-sway" src="sukoon-bg.jpg" alt="">
-    <img class="hair-sway" src="sukoon-bg.jpg" alt="">
-
-    <div class="falling-leaf leaf1"></div>
-    <div class="falling-leaf leaf2"></div>
-
-    <div class="radio-glow" id="radioGlow"></div>
-
-    <div class="steam-wrap">
-      <div class="steam"></div>
-      <div class="steam s2"></div>
-      <div class="steam s3"></div>
-    </div>
-
-    <div class="road-light"></div>
-    <div class="road-light r2"></div>
-
-    <div class="twinkle-layer" id="twinkleLayer"></div>
-
-    <div class="bg-overlay"></div>
-  </div>
-</div>
+<!-- Static background scene — no motion, just the artwork filling the screen -->
+<div class="bg" style="background-image:url('sukoon-bg.jpg')"></div>
+<div class="bg-overlay"></div>
 
 <div class="ui-layer">
-  <header class="header">
-    <div class="logo-section">
-      <h1 class="title">सुकून</h1>
-      <p class="tagline">raat, radio aur thoda sukoon</p>
-    </div>
-    <div class="header-right">
-      <div class="live-pill">
-        <span class="dot-live"></span>
-        <span id="listenerCount">0</span> listening
-      </div>
-      <div class="clock" id="clockDisplay">--:--</div>
-    </div>
-  </header>
 
-  <a href="https://instagram.com/tumhara_naam" target="_blank" rel="noopener" class="ig-btn" id="igBtn" aria-label="Follow on Instagram">
-    <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 2.16.25 2.99.6 1.6.66 2.86 1.92 3.52 3.52.35.83.55 1.82.6 2.99.07 1.25.07 1.65.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 2.16-.6 2.99-.66 1.6-1.92 2.86-3.52 3.52-.83.35-1.82.55-2.99.6-1.25.07-1.65.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-2.16-.25-2.99-.6a6.9 6.9 0 0 1-3.52-3.52c-.35-.83-.55-1.82-.6-2.99C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.85c.05-1.17.25-2.16.6-2.99a6.9 6.9 0 0 1 3.52-3.52c.83-.35 1.82-.55 2.99-.6C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.15 0-3.52 0-4.76.07-.96.04-1.48.2-1.83.34-.46.18-.79.4-1.14.75-.35.35-.57.68-.75 1.14-.14.35-.3.87-.34 1.83C3.1 8.48 3.1 8.85 3.1 12s0 3.52.07 4.76c.04.96.2 1.48.34 1.83.18.46.4.79.75 1.14.35.35.68.57 1.14.75.35.14.87.3 1.83.34 1.24.07 1.61.07 4.76.07s3.52 0 4.76-.07c.96-.04 1.48-.2 1.83-.34.46-.18.79-.4 1.14-.75.35-.35.57-.68.75-1.14.14-.35.3-.87.34-1.83.07-1.24.07-1.61.07-4.76s0-3.52-.07-4.76c-.04-.96-.2-1.48-.34-1.83a3.06 3.06 0 0 0-.75-1.14 3.06 3.06 0 0 0-1.14-.75c-.35-.14-.87-.3-1.83-.34C15.52 4 15.15 4 12 4zm0 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 1.8a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4zm5.7-2a1.05 1.05 0 1 1-2.1 0 1.05 1.05 0 0 1 2.1 0z"/></svg>
-  </a>
+  <!-- top-left: clock -->
+  <div class="clock" id="clockDisplay">--:--</div>
 
-  <main class="shayari-box">
-    <p class="shayari-line" id="shayariLine"></p>
-  </main>
+  <!-- top-left: logo, sits just under the clock -->
+  <div class="logo-block">
+    <h1 class="title">सुकून</h1>
+    <p class="tagline">raat, radio aur thoda sukoon</p>
+  </div>
 
-  <p class="credit">Made with <span class="heart">♡</span> by <a href="#" id="creatorHandle">@tumhara_naam</a></p>
+  <!-- top-center: minimal live listener count -->
+  <div class="live-pill">
+    <span class="dot-live"></span>
+    <span id="listenerCount">0</span> online
+  </div>
 
+  <!-- top-right: Spotify playlist + creator Instagram -->
+  <div class="top-links">
+    <a href="REPLACE_WITH_SPOTIFY_PLAYLIST_LINK" target="_blank" rel="noopener" class="icon-btn" aria-label="Listen on Spotify">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.59 14.44a.62.62 0 0 1-.86.21c-2.36-1.44-5.33-1.77-8.83-.97a.62.62 0 1 1-.28-1.22c3.83-.88 7.11-.5 9.76 1.12.3.18.4.57.21.86zm1.22-2.72a.78.78 0 0 1-1.07.26c-2.7-1.66-6.82-2.14-10.02-1.17a.78.78 0 1 1-.45-1.49c3.65-1.1 8.19-.57 11.28 1.33.37.23.49.71.26 1.07zm.1-2.83C14.98 9.03 9.1 8.83 5.67 9.9a.93.93 0 1 1-.56-1.78c3.94-1.2 10.41-.97 14.51 1.5a.93.93 0 1 1-.97 1.59z"/></svg>
+    </a>
+    <a href="https://instagram.com/tumhara_naam" target="_blank" rel="noopener" class="icon-btn" id="igBtn" aria-label="Follow on Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 2.16.25 2.99.6 1.6.66 2.86 1.92 3.52 3.52.35.83.55 1.82.6 2.99.07 1.25.07 1.65.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 2.16-.6 2.99-.66 1.6-1.92 2.86-3.52 3.52-.83.35-1.82.55-2.99.6-1.25.07-1.65.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-2.16-.25-2.99-.6a6.9 6.9 0 0 1-3.52-3.52c-.35-.83-.55-1.82-.6-2.99C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.85c.05-1.17.25-2.16.6-2.99a6.9 6.9 0 0 1 3.52-3.52c.83-.35 1.82-.55 2.99-.6C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.15 0-3.52 0-4.76.07-.96.04-1.48.2-1.83.34-.46.18-.79.4-1.14.75-.35.35-.57.68-.75 1.14-.14.35-.3.87-.34 1.83C3.1 8.48 3.1 8.85 3.1 12s0 3.52.07 4.76c.04.96.2 1.48.34 1.83.18.46.4.79.75 1.14.35.35.68.57 1.14.75.35.14.87.3 1.83.34 1.24.07 1.61.07 4.76.07s3.52 0 4.76-.07c.96-.04 1.48-.2 1.83-.34.46-.18.79-.4 1.14-.75.35-.35.57-.68.75-1.14.14-.35.3-.87.34-1.83.07-1.24.07-1.61.07-4.76s0-3.52-.07-4.76c-.04-.96-.2-1.48-.34-1.83a3.06 3.06 0 0 0-.75-1.14 3.06 3.06 0 0 0-1.14-.75c-.35-.14-.87-.3-1.83-.34C15.52 4 15.15 4 12 4zm0 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 1.8a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4zm5.7-2a1.05 1.05 0 1 1-2.1 0 1.05 1.05 0 0 1 2.1 0z"/></svg>
+    </a>
+  </div>
+
+  <!-- shayari line, sits just above the songbar, centered -->
+  <p class="shayari-line" id="shayariLine"></p>
+
+  <!-- minimal, compact songbar — centered at the bottom, not full-width -->
   <footer class="songbar" id="songbar">
     <div class="cover" id="cover"></div>
     <div class="song-meta">
@@ -82,15 +63,16 @@
       <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
     </div>
     <button class="ctrl-btn" id="prevBtn" aria-label="Previous">
-      <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
     </button>
     <button class="play-btn" id="playBtn" aria-label="Play">
       <svg id="playIcon" viewBox="0 0 24 24" fill="#0c1a33"><path d="M8 5v14l11-7z"/></svg>
     </button>
     <button class="ctrl-btn" id="nextBtn" aria-label="Next">
-      <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zm-9.5 6L15 18V6z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
     </button>
   </footer>
+
 </div>
 
 <div id="player"></div>

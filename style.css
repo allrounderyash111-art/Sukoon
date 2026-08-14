@@ -3,270 +3,132 @@
   --amber-hot:#ffcf8f;
   --text-cream:#f6f0e2;
   --muted:#c9d2e0;
-  --line: rgba(246,240,226,0.18);
+  --line: rgba(246,240,226,0.16);
+  --card: rgba(10,16,28,0.55);
 }
 
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:'Karla', sans-serif; overflow:hidden;}
 
 /* ============================================================
-   SCENE ENGINE
-   The scene is a fixed 1376x768 canvas (the image's real pixel size).
-   JS scales this canvas up with a single transform so it always
-   fills the screen edge-to-edge (like background-size:cover),
-   but because every animation lives INSIDE this same canvas,
-   they stay perfectly aligned to the artwork on any screen size.
+   BACKGROUND — a single static image, no motion, no scaling engine.
    ============================================================ */
-.scene-wrapper{
+.bg{
   position:fixed; inset:0;
-  overflow:hidden;
-  background:#05070d;
-}
-.scene{
-  position:absolute;
-  top:50%; left:50%;
-  width:1376px; height:768px;
-  transform-origin:center center;
-  /* transform is set by JS (script.js) on load and on resize */
-}
-
-.bg-image{
-  position:absolute; inset:0;
-  width:1376px; height:768px;
-  display:block;
+  background-image:url('sukoon-bg.jpg');
+  background-size:cover;
+  background-position:center;
   z-index:0;
-  animation:slowzoom 40s ease-in-out infinite alternate;
-  transform-origin:58% 45%;
 }
-@keyframes slowzoom{ from{transform:scale(1);} to{transform:scale(1.03);} }
-
 .bg-overlay{
-  position:absolute; inset:0; z-index:9;
-  background:linear-gradient(180deg, rgba(6,10,20,0.3) 0%, rgba(6,10,20,0) 16%, rgba(6,10,20,0) 70%, rgba(6,10,20,0.5) 100%);
+  position:fixed; inset:0; z-index:1;
+  background:linear-gradient(180deg, rgba(6,10,20,0.35) 0%, rgba(6,10,20,0.05) 22%, rgba(6,10,20,0.05) 62%, rgba(6,10,20,0.55) 100%);
   pointer-events:none;
 }
 
-/* ---------- TREE SWAY ---------- */
-.tree-sway{
-  position:absolute; inset:0;
-  width:1376px; height:768px;
-  z-index:1;
-  clip-path: polygon(228px 150px, 655px 150px, 655px 432px, 228px 432px);
-  transform-origin: 430px 432px;
-  animation:treesway 6s ease-in-out infinite;
-}
-@keyframes treesway{
-  0%,100%{ transform:rotate(-2.4deg); }
-  50%{ transform:rotate(2.6deg); }
-}
-
-/* ---------- HAIR SWAY ---------- */
-.hair-sway{
-  position:absolute; inset:0;
-  width:1376px; height:768px;
-  z-index:3;
-  clip-path: polygon(742px 222px, 826px 222px, 826px 275px, 742px 275px);
-  transform-origin: 784px 275px;
-  animation:hairsway 3.4s ease-in-out infinite;
-}
-@keyframes hairsway{
-  0%,100%{ transform:rotate(-1.1deg); }
-  50%{ transform:rotate(1.3deg); }
-}
-
-/* ---------- FALLING LEAVES ---------- */
-.falling-leaf{
-  position:absolute; z-index:2;
-  width:9px; height:9px;
-  background:linear-gradient(135deg,#3a6b40,#1e3d24);
-  border-radius:0 70% 0 70%;
-  opacity:0;
-}
-.leaf1{ left:460px; top:200px; animation:leaffall1 7s ease-in infinite; animation-delay:1s; }
-.leaf2{ left:340px; top:260px; animation:leaffall2 8.5s ease-in infinite; animation-delay:4.5s; }
-@keyframes leaffall1{
-  0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
-  5%{ opacity:0.9; }
-  90%{ opacity:0.7; }
-  100%{ transform:translate(38px,220px) rotate(280deg); opacity:0; }
-}
-@keyframes leaffall2{
-  0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
-  5%{ opacity:0.85; }
-  90%{ opacity:0.6; }
-  100%{ transform:translate(-30px,200px) rotate(-260deg); opacity:0; }
-}
-
-/* ---------- RADIO GLOW (pulses to suggest it's playing) ---------- */
-.radio-glow{
-  position:absolute; z-index:4;
-  left:660px; top:398px;
-  width:38px; height:24px;
-  border-radius:4px;
-  background:radial-gradient(circle, rgba(255,190,110,0.55), transparent 75%);
-  animation:radioidle 3.5s ease-in-out infinite;
-}
-@keyframes radioidle{ 0%,100%{opacity:0.5;} 50%{opacity:0.75;} }
-.radio-glow.active{ animation:radioplaying 0.9s ease-in-out infinite; }
-@keyframes radioplaying{
-  0%,100%{ opacity:0.65; transform:scale(1); }
-  25%{ opacity:1; transform:scale(1.08); }
-  50%{ opacity:0.7; transform:scale(0.97); }
-  75%{ opacity:0.95; transform:scale(1.05); }
-}
-
-/* ---------- STEAM (continues above the painted steam in the artwork) ---------- */
-.steam-wrap{ position:absolute; z-index:4; left:700px; top:130px; width:50px; height:110px; }
-.steam{
-  position:absolute; bottom:0; left:20px;
-  width:6px; height:20px; border-radius:50%;
-  background:rgba(255,255,255,0.6);
-  filter:blur(2px);
-  animation:steamrise 3.4s ease-in infinite;
-}
-.steam.s2{ left:2px; animation-delay:1.1s; }
-.steam.s3{ left:34px; animation-delay:2.2s; }
-@keyframes steamrise{
-  0%{ transform:translateY(10px) scale(0.8); opacity:0; }
-  25%{ opacity:0.7; }
-  100%{ transform:translateY(-60px) scale(2) translateX(6px); opacity:0; }
-}
-
-/* ---------- ROAD LIGHTS ---------- */
-.road-light{
-  position:absolute; z-index:2;
-  width:5px; height:5px; border-radius:50%;
-  background:radial-gradient(circle, #ffe6b0, rgba(255,200,110,0.7) 60%, transparent 80%);
-  box-shadow:0 0 8px 2px rgba(255,210,140,0.6);
-  animation:roaddrive 10s linear infinite;
-  opacity:0;
-}
-.road-light.r2{ animation-delay:5s; }
-@keyframes roaddrive{
-  0%{ left:0px; top:655px; opacity:0; }
-  8%{ opacity:0.9; }
-  35%{ left:95px; top:590px; }
-  60%{ left:160px; top:540px; }
-  85%{ left:230px; top:490px; opacity:0.9; }
-  100%{ left:260px; top:468px; opacity:0; }
-}
-
-/* ---------- TWINKLE STARS ---------- */
-.twinkle-layer{ position:absolute; inset:0; z-index:1; pointer-events:none; }
-.twinkle{
-  position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
-  opacity:0.2; animation:twinkle 3.5s ease-in-out infinite;
-}
-@keyframes twinkle{ 0%,100%{opacity:0.05;} 50%{opacity:0.85;} }
-
-@media (prefers-reduced-motion: reduce){
-  .scene *{ animation:none !important; }
-}
-
 /* ============================================================
-   UI LAYER — sits above the scene, sized relative to the viewport
-   (not the scaled canvas) so text is always a normal readable size
+   UI LAYER
    ============================================================ */
-.ui-layer{ position:fixed; inset:0; z-index:50; pointer-events:none; }
+.ui-layer{ position:fixed; inset:0; z-index:10; pointer-events:none; }
 .ui-layer > *{ pointer-events:auto; }
 
-.header{
-  position:absolute; top:4%; left:0; right:0;
-  display:flex; justify-content:space-between; align-items:flex-start;
-  padding:0 5%;
+/* ---------- top-left: clock ---------- */
+.clock{
+  position:absolute; top:4%; left:5%;
+  font-size:clamp(0.75rem, 1.4vw, 0.9rem);
+  color:var(--muted);
+  letter-spacing:0.4px;
+  text-shadow:0 1px 6px rgba(0,0,0,0.6);
+}
+
+/* ---------- top-left: logo, just under the clock ---------- */
+.logo-block{
+  position:absolute; top:calc(4% + 26px); left:5%;
 }
 .title{
   font-family:'Baloo 2', sans-serif; font-weight:700;
-  font-size:clamp(1.5rem, 3.6vw, 2.4rem);
+  font-size:clamp(1.4rem, 3.2vw, 2.1rem);
   color:var(--text-cream);
   text-shadow:0 2px 14px rgba(0,0,0,0.6);
 }
-.tagline{ margin-top:2px; font-size:clamp(0.7rem, 1.3vw, 0.85rem); color:var(--muted); text-shadow:0 1px 6px rgba(0,0,0,0.6); }
+.tagline{ margin-top:2px; font-size:clamp(0.68rem, 1.2vw, 0.8rem); color:var(--muted); text-shadow:0 1px 6px rgba(0,0,0,0.6); }
 
+/* ---------- top-center: minimal live count ---------- */
 .live-pill{
+  position:absolute; top:4%; left:50%; transform:translateX(-50%);
   display:flex; align-items:center; gap:6px;
-  background:rgba(10,16,28,0.45); backdrop-filter:blur(6px);
-  border:1px solid var(--line); padding:5px 12px; border-radius:999px;
-  font-size:clamp(0.68rem, 1.1vw, 0.8rem); color:var(--muted); white-space:nowrap;
-}
-.dot-live{ width:7px; height:7px; border-radius:50%; background:#7be08a; box-shadow:0 0 6px 2px rgba(123,224,138,0.7); animation:pulse 1.8s ease-in-out infinite; }
-@keyframes pulse{0%,100%{opacity:0.5;} 50%{opacity:1;}}
-
-.header-right{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
-.clock{
-  font-size:clamp(0.68rem, 1.1vw, 0.8rem);
-  color:var(--muted);
+  font-size:clamp(0.7rem, 1.2vw, 0.82rem); color:var(--muted); white-space:nowrap;
   text-shadow:0 1px 6px rgba(0,0,0,0.6);
-  letter-spacing:0.5px;
 }
+.dot-live{ width:6px; height:6px; border-radius:50%; background:#7be08a; box-shadow:0 0 6px 2px rgba(123,224,138,0.6); }
 
-.ig-btn{
-  position:absolute; top:4%; right:5%; margin-top:44px;
-  width:34px; height:34px; border-radius:50%;
-  background:rgba(10,16,28,0.45); backdrop-filter:blur(6px);
+/* ---------- top-right: Spotify + Instagram ---------- */
+.top-links{
+  position:absolute; top:4%; right:5%;
+  display:flex; align-items:center; gap:10px;
+}
+.icon-btn{
+  width:32px; height:32px; border-radius:50%;
+  background:rgba(10,16,28,0.4);
   border:1px solid var(--line);
   display:flex; align-items:center; justify-content:center;
   text-decoration:none;
 }
-.ig-btn svg{ width:17px; height:17px; fill:var(--text-cream); }
+.icon-btn svg{ width:16px; height:16px; fill:var(--text-cream); }
 
-.shayari-box{
-  position:absolute; left:5%; bottom:96px; max-width:280px; z-index:10;
-}
+/* ---------- shayari line, just above the songbar, centered ---------- */
+.shayari-box, .shayari-line{ all:unset; }
 .shayari-line{
+  position:absolute; left:50%; bottom:104px; transform:translateX(-50%);
+  display:block; width:90%; max-width:360px; text-align:center;
   font-family:'Tiro Devanagari Hindi', serif; font-style:italic; font-weight:400;
-  font-size:clamp(0.8rem, 1.6vw, 1rem);
-  line-height:1.6;
+  font-size:clamp(0.78rem, 1.5vw, 0.92rem);
+  line-height:1.55;
   color:var(--amber-hot);
   text-shadow:0 2px 10px rgba(0,0,0,0.8);
-  letter-spacing:0.2px;
   opacity:0;
-  transition:opacity 1.8s ease;
+  transition:opacity 0.6s ease;
+  z-index:10;
 }
 .shayari-line.show{ opacity:1; }
 
-.credit{
-  position:absolute; left:5%; bottom:70px; z-index:10;
-  font-size:0.62rem; color:var(--muted); text-shadow:0 1px 6px rgba(0,0,0,0.6);
-}
-.credit .heart{ color:var(--amber-hot); }
-.credit a{ color:var(--amber-hot); text-decoration:none; }
-
+/* ---------- minimal songbar, centered at bottom, not full-width ---------- */
 .songbar{
-  position:absolute; left:0; right:0; bottom:0; z-index:20;
+  position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+  z-index:20;
   display:flex; align-items:center; gap:10px;
-  padding:12px 5%;
-  background:rgba(8,12,20,0.68); backdrop-filter:blur(14px);
-  border-top:1px solid var(--line);
+  width:92%; max-width:360px;
+  padding:8px 12px;
+  background:var(--card); backdrop-filter:blur(14px);
+  border:1px solid var(--line);
+  border-radius:999px;
 }
 .cover{
-  width:40px; height:40px; border-radius:8px; flex:0 0 auto;
+  width:32px; height:32px; border-radius:50%; flex:0 0 auto;
   background:conic-gradient(from 200deg, var(--amber), #d98f86, #1b2b48, var(--amber));
 }
-.playing .cover{ animation:spinCover 8s linear infinite; }
-@keyframes spinCover{ to{ transform:rotate(360deg); } }
-
-.song-meta{ flex:1 1 auto; min-width:0; max-width:420px; }
-.song-name{ font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.song-artist{ font-size:0.72rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
-.progress{ margin-top:5px; height:2px; background:rgba(246,240,226,0.18); border-radius:2px; overflow:hidden; max-width:300px; }
+.song-meta{ flex:1 1 auto; min-width:0; }
+.song-name{ font-size:0.76rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.song-artist{ font-size:0.66rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+.progress{ margin-top:4px; height:2px; background:rgba(246,240,226,0.16); border-radius:2px; overflow:hidden; }
 .progress-fill{ height:100%; width:0%; background:var(--amber); }
 
 .ctrl-btn{
-  flex:0 0 auto; width:30px; height:30px; border-radius:50%;
-  background:rgba(255,255,255,0.08); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%;
+  background:transparent; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
 }
-.ctrl-btn svg{ width:14px; height:14px; fill:var(--text-cream); }
+.ctrl-btn svg{ width:13px; height:13px; fill:var(--text-cream); }
 
 .play-btn{
-  flex:0 0 auto; width:40px; height:40px; border-radius:50%;
+  flex:0 0 auto; width:30px; height:30px; border-radius:50%;
   background:var(--amber); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
 }
-.play-btn svg{ width:16px; height:16px; }
+.play-btn svg{ width:13px; height:13px; }
 
 #player{ position:absolute; width:0; height:0; overflow:hidden; }
 
 @media (min-width:900px){
-  .songbar{ padding:14px 8%; }
-  .song-meta{ max-width:500px; }
+  .songbar{ max-width:420px; bottom:28px; padding:10px 16px; gap:12px; }
+  .shayari-line{ bottom:118px; max-width:420px; }
+  .cover{ width:36px; height:36px; }
 }
