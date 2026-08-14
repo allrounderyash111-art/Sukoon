@@ -1,48 +1,72 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sukoon — raat, radio aur thoda sukoon</title>
-<meta name="description" content="Akele raaton ke liye gaane. Hindi aur Haryanvi ke sukoon bhare gaane, live.">
+<meta name="description" content="Peaceful songs for lonely nights. Hindi, Haryanvi and ghazals, live.">
 <meta property="og:title" content="Sukoon">
-<meta property="og:description" content="Akele raaton ke liye gaane. Hindi aur Haryanvi ke sukoon bhare gaane, live.">
+<meta property="og:description" content="Peaceful songs for lonely nights. Hindi, Haryanvi and ghazals, live.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="sukoon-bg.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Tiro+Devanagari+Hindi:ital@0;1&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+
+<!-- Firebase (used for the real live listener count) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-<div class="scene-wrapper">
-<div class="scene">
-  <div class="bg-image"></div>
-  <div class="tree-sway"></div>
-  <div class="cloud-extra"></div>
-  <div class="road-light"></div>
-  <div class="road-light r2"></div>
-  <div class="lamp-glow"></div>
-  <div class="steam-wrap">
-    <div class="steam"></div>
-    <div class="steam s2"></div>
-    <div class="steam s3"></div>
+<div class="scene-wrapper" id="sceneWrapper">
+  <div class="scene" id="scene">
+
+    <img class="bg-image" src="sukoon-bg.jpg" alt="Sukoon balcony scene">
+
+    <!-- Living-photo animation layers, all locked to the image's own coordinate space -->
+    <img class="tree-sway" src="sukoon-bg.jpg" alt="">
+    <img class="hair-sway" src="sukoon-bg.jpg" alt="">
+
+    <div class="falling-leaf leaf1"></div>
+    <div class="falling-leaf leaf2"></div>
+
+    <div class="radio-glow" id="radioGlow"></div>
+
+    <div class="steam-wrap">
+      <div class="steam"></div>
+      <div class="steam s2"></div>
+      <div class="steam s3"></div>
+    </div>
+
+    <div class="road-light"></div>
+    <div class="road-light r2"></div>
+
+    <div class="twinkle-layer" id="twinkleLayer"></div>
+
+    <div class="bg-overlay"></div>
   </div>
-  <div class="bg-overlay"></div>
+</div>
 
-  <div class="twinkle-layer" id="twinkleLayer"></div>
-
+<div class="ui-layer">
   <header class="header">
     <div class="logo-section">
       <h1 class="title">सुकून</h1>
       <p class="tagline">raat, radio aur thoda sukoon</p>
     </div>
-    <div class="live-pill">
-      <span class="dot-live"></span>
-      <span id="listenerCount">41</span> listening
+    <div class="header-right">
+      <div class="live-pill">
+        <span class="dot-live"></span>
+        <span id="listenerCount">0</span> listening
+      </div>
+      <div class="clock" id="clockDisplay">--:--</div>
     </div>
   </header>
+
+  <a href="https://instagram.com/tumhara_naam" target="_blank" rel="noopener" class="ig-btn" id="igBtn" aria-label="Follow on Instagram">
+    <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 2.16.25 2.99.6 1.6.66 2.86 1.92 3.52 3.52.35.83.55 1.82.6 2.99.07 1.25.07 1.65.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 2.16-.6 2.99-.66 1.6-1.92 2.86-3.52 3.52-.83.35-1.82.55-2.99.6-1.25.07-1.65.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-2.16-.25-2.99-.6a6.9 6.9 0 0 1-3.52-3.52c-.35-.83-.55-1.82-.6-2.99C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.85c.05-1.17.25-2.16.6-2.99a6.9 6.9 0 0 1 3.52-3.52c.83-.35 1.82-.55 2.99-.6C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.15 0-3.52 0-4.76.07-.96.04-1.48.2-1.83.34-.46.18-.79.4-1.14.75-.35.35-.57.68-.75 1.14-.14.35-.3.87-.34 1.83C3.1 8.48 3.1 8.85 3.1 12s0 3.52.07 4.76c.04.96.2 1.48.34 1.83.18.46.4.79.75 1.14.35.35.68.57 1.14.75.35.14.87.3 1.83.34 1.24.07 1.61.07 4.76.07s3.52 0 4.76-.07c.96-.04 1.48-.2 1.83-.34.46-.18.79-.4 1.14-.75.35-.35.57-.68.75-1.14.14-.35.3-.87.34-1.83.07-1.24.07-1.61.07-4.76s0-3.52-.07-4.76c-.04-.96-.2-1.48-.34-1.83a3.06 3.06 0 0 0-.75-1.14 3.06 3.06 0 0 0-1.14-.75c-.35-.14-.87-.3-1.83-.34C15.52 4 15.15 4 12 4zm0 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 1.8a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4zm5.7-2a1.05 1.05 0 1 1-2.1 0 1.05 1.05 0 0 1 2.1 0z"/></svg>
+  </a>
 
   <main class="shayari-box">
     <p class="shayari-line" id="shayariLine"></p>
@@ -67,7 +91,6 @@
       <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zm-9.5 6L15 18V6z"/></svg>
     </button>
   </footer>
-</div>
 </div>
 
 <div id="player"></div>

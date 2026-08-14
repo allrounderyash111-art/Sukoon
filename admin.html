@@ -3,109 +3,162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sukoon Admin</title>
+<title>Sukoon — Admin Panel</title>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <style>
-  *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',Arial,sans-serif;}
-  body{ background:#0c1a33; color:#f6f0e2; min-height:100vh; padding:20px; }
-  h1{ font-size:1.4rem; margin-bottom:4px; }
-  .sub{ color:#a7b4c9; font-size:0.85rem; margin-bottom:20px; }
-  .card{ background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:16px; margin-bottom:18px; }
-  .card h2{ font-size:1.05rem; margin-bottom:10px; }
-  .row{ display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  :root{ --amber:#f0b064; --bg:#0c1a33; --card:rgba(255,255,255,0.05); --line:rgba(255,255,255,0.1); }
+  *{ box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif; }
+  body{ background:var(--bg); color:#f6f0e2; min-height:100vh; padding:24px 18px 60px; }
+  .wrap{ max-width:640px; margin:0 auto; }
+  h1{ font-size:1.5rem; font-weight:700; }
+  .sub{ color:#a7b4c9; font-size:0.88rem; margin-top:4px; margin-bottom:24px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; }
+  .card h2{ font-size:1rem; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .card .desc{ color:#8fa0b8; font-size:0.8rem; margin-bottom:14px; }
+  .row{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   input, textarea{
-    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
-    color:#f6f0e2; padding:9px 10px; border-radius:8px; font-size:0.9rem;
-    flex:1 1 140px;
+    background:rgba(255,255,255,0.07); border:1px solid var(--line);
+    color:#f6f0e2; padding:10px 12px; border-radius:9px; font-size:0.9rem;
+    flex:1 1 140px; font-family:inherit;
   }
-  textarea{ width:100%; min-height:60px; resize:vertical; }
+  input::placeholder, textarea::placeholder{ color:#6b7a90; }
+  textarea{ width:100%; min-height:56px; resize:vertical; }
   button{
-    background:#f0b064; color:#0c1a33; border:none; padding:9px 16px;
-    border-radius:8px; font-weight:600; cursor:pointer; font-size:0.85rem;
+    background:var(--amber); color:#0c1a33; border:none; padding:10px 18px;
+    border-radius:9px; font-weight:600; cursor:pointer; font-size:0.85rem;
   }
-  button.secondary{ background:rgba(255,255,255,0.1); color:#f6f0e2; }
-  button.danger{ background:#e4736b; color:#1a0c0c; }
+  button.danger{ background:rgba(228,115,107,0.18); color:#f0a49d; padding:6px 12px; font-size:0.78rem; }
   .item{
-    display:flex; gap:8px; align-items:center; margin-bottom:8px;
-    background:rgba(255,255,255,0.04); padding:8px; border-radius:8px; flex-wrap:wrap;
+    display:flex; gap:10px; align-items:center; margin-bottom:8px;
+    background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:9px; flex-wrap:wrap;
   }
-  .item span{ flex:1 1 auto; font-size:0.85rem; word-break:break-word; }
+  .item .info{ flex:1 1 auto; font-size:0.85rem; word-break:break-word; }
+  .item .info b{ display:block; }
+  .item .info small{ color:#8fa0b8; }
   #codeOut{
-    width:100%; min-height:220px; background:#070d18; color:#8be08a;
-    font-family:monospace; font-size:0.78rem; padding:12px; border-radius:8px;
-    border:1px solid rgba(255,255,255,0.15); white-space:pre;
+    width:100%; min-height:240px; background:#070d18; color:#8be08a;
+    font-family:'SF Mono',Consolas,monospace; font-size:0.75rem; padding:14px; border-radius:9px;
+    border:1px solid var(--line); white-space:pre; line-height:1.5;
   }
+  .hint{ font-size:0.72rem; color:#7688a0; margin-top:8px; line-height:1.5; }
   #gate{
     position:fixed; inset:0; background:#05070d; display:flex; align-items:center;
-    justify-content:center; flex-direction:column; gap:14px; z-index:99;
+    justify-content:center; flex-direction:column; gap:14px; z-index:99; padding:20px;
   }
-  #gate input{ max-width:220px; }
-  .hint{ font-size:0.72rem; color:#8593a8; margin-top:4px; }
+  #gate .lock{ font-size:2.2rem; }
+  #gate input{ max-width:260px; text-align:center; }
+  #gate .hint{ text-align:center; max-width:300px; }
+  #gateError{ color:#f0a49d; font-size:0.8rem; min-height:1em; }
+  .badge{
+    display:inline-block; background:rgba(123,224,138,0.15); color:#7be08a;
+    font-size:0.68rem; padding:2px 8px; border-radius:999px; margin-left:6px;
+  }
+  .logout{ background:rgba(255,255,255,0.1); color:#f6f0e2; font-size:0.78rem; padding:6px 14px; margin-bottom:16px; }
 </style>
 </head>
 <body>
 
 <div id="gate">
-  <h1>🔒 Sukoon Admin</h1>
+  <div class="lock">🔒</div>
+  <h1 style="font-size:1.2rem;">Sukoon Admin</h1>
+  <input type="email" id="emailInput" placeholder="Admin email">
   <input type="password" id="pwInput" placeholder="Password">
-  <button onclick="checkPassword()">Enter</button>
-  <p class="hint">Yeh sirf casual visitors ko rokta hai — asli security nahi hai,<br>kyunki yeh ek static site hai. Password change karne ke liye<br>neeche is file ke andar "MERI_PASSWORD" dhoondo.</p>
+  <button onclick="login()">Log In</button>
+  <p id="gateError"></p>
+  <p class="hint">This uses real Firebase authentication — your login is verified securely on Google's servers, never stored or visible in this page's code.</p>
 </div>
 
 <div id="panel" style="display:none;">
-  <h1>Sukoon — Admin Panel</h1>
-  <p class="sub">Songs aur shayaris manage karo, phir neeche se code copy karke script.js mein paste karo.</p>
+  <div class="wrap">
+    <button class="logout" onclick="logout()">Log Out</button>
+    <h1>Sukoon — Admin Panel <span class="badge">private</span></h1>
+    <p class="sub">Manage your songs, shayaris and profile link here, then copy the generated code into your site's files on GitHub.</p>
 
-  <div class="card">
-    <h2>🎵 Songs</h2>
-    <div id="songList"></div>
-    <div class="row">
-      <input id="songTitle" placeholder="Song title (e.g. Barsaat)">
-      <input id="songArtist" placeholder="Artist (optional)">
-      <input id="songId" placeholder="YouTube video ID">
+    <div class="card">
+      <h2>🎵 Songs</h2>
+      <p class="desc">Add any song by pasting its YouTube video ID — the part after "v=" in a YouTube link.</p>
+      <div id="songList"></div>
+      <div class="row">
+        <input id="songTitle" placeholder="Song title">
+        <input id="songArtist" placeholder="Artist (optional)">
+      </div>
+      <div class="row">
+        <input id="songId" placeholder="YouTube video ID">
+        <button onclick="addSong()">Add Song</button>
+      </div>
     </div>
-    <button onclick="addSong()">+ Add Song</button>
-    <p class="hint">Video ID = youtube.com/watch?v=<b>YEH_WALA_PART</b></p>
-  </div>
 
-  <div class="card">
-    <h2>✍️ Shayaris</h2>
-    <div id="shayariList"></div>
-    <div class="row">
-      <textarea id="shayariInput" placeholder="Naya shayari line likho. Do lines ke beech &lt;br&gt; use karo."></textarea>
+    <div class="card">
+      <h2>✍️ Shayaris</h2>
+      <p class="desc">These rotate on your site automatically. Use &lt;br&gt; between two lines.</p>
+      <div id="shayariList"></div>
+      <div class="row">
+        <textarea id="shayariInput" placeholder="Write a new shayari line..."></textarea>
+      </div>
+      <button onclick="addShayari()">Add Shayari</button>
     </div>
-    <button onclick="addShayari()">+ Add Shayari</button>
-  </div>
 
-  <div class="card">
-    <h2>👤 Creator credit</h2>
-    <div class="row">
-      <input id="creatorInput" placeholder="@tumhara_naam">
-      <button onclick="updateCreator()">Update</button>
+    <div class="card">
+      <h2>👤 Profile</h2>
+      <p class="desc">Your creator credit and Instagram link shown on the site.</p>
+      <div class="row">
+        <input id="creatorInput" placeholder="@yourusername (shown as credit)">
+      </div>
+      <div class="row">
+        <input id="igInput" placeholder="Instagram link (e.g. https://instagram.com/yourhandle)">
+      </div>
+      <button onclick="updateProfile()">Update Profile</button>
     </div>
-  </div>
 
-  <div class="card">
-    <h2>📋 Generated code</h2>
-    <p class="sub">Yeh poora code copy karo aur apne script.js file mein PLAYLIST aur SHAYARIS wale hisse ki jagah paste kar do (GitHub par edit karke, jaisa guide mein bataya hai).</p>
-    <textarea id="codeOut" readonly></textarea>
-    <div class="row" style="margin-top:10px;">
-      <button onclick="copyCode()">Copy Code</button>
+    <div class="card">
+      <h2>📋 Generated Code</h2>
+      <p class="desc">Copy this and paste it into your files on GitHub (see the deployment guide for exactly where).</p>
+      <textarea id="codeOut" readonly></textarea>
+      <div class="row" style="margin-top:12px;">
+        <button onclick="copyCode()">Copy Code</button>
+      </div>
+      <p class="hint">
+        • The SHAYARIS and PLAYLIST blocks go into <b>script.js</b>, replacing the existing arrays of the same name.<br>
+        • The creator credit line goes into <b>index.html</b> — find id="creatorHandle" and replace the text and href.<br>
+        • The Instagram link goes into <b>index.html</b> — find id="igBtn" and replace its href.
+      </p>
     </div>
   </div>
 </div>
 
 <script>
-  const CORRECT_PASSWORD = "MERI_PASSWORD"; // <- ise apne khud ke password se replace karo
+  /* Same Firebase project as index.html — replace with your own config */
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-  function checkPassword(){
-    const val = document.getElementById('pwInput').value;
-    if(val === CORRECT_PASSWORD){
-      document.getElementById('gate').style.display='none';
-      document.getElementById('panel').style.display='block';
-    } else {
-      alert('Galat password.');
-    }
+  function login(){
+    const email = document.getElementById('emailInput').value.trim();
+    const pw = document.getElementById('pwInput').value;
+    document.getElementById('gateError').textContent = '';
+    firebase.auth().signInWithEmailAndPassword(email, pw)
+      .catch((err) => {
+        document.getElementById('gateError').textContent = 'Login failed: ' + err.message;
+      });
   }
+
+  function logout(){
+    firebase.auth().signOut();
+  }
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+    } else {
+      document.getElementById('gate').style.display = 'flex';
+      document.getElementById('panel').style.display = 'none';
+    }
+  });
 
   let songs = [
     { id: "A5G528i-OYY", title: "Kitaab", artist: "Shwet" },
@@ -120,12 +173,13 @@
     "kuch log akele nahi hote,<br>bas apne saath hote hain"
   ];
   let creatorHandle = "@tumhara_naam";
+  let igLink = "https://instagram.com/tumhara_naam";
 
   function renderSongs(){
     const el = document.getElementById('songList');
     el.innerHTML = songs.map((s,i)=>`
       <div class="item">
-        <span><b>${s.title}</b> ${s.artist ? '— '+s.artist : ''}<br><small>${s.id}</small></span>
+        <div class="info"><b>${s.title}</b>${s.artist ? ' — '+s.artist : ''}<br><small>${s.id}</small></div>
         <button class="danger" onclick="removeSong(${i})">Remove</button>
       </div>`).join('');
     generateCode();
@@ -134,7 +188,7 @@
     const title = document.getElementById('songTitle').value.trim();
     const artist = document.getElementById('songArtist').value.trim();
     const id = document.getElementById('songId').value.trim() || "REPLACE_WITH_VIDEO_ID";
-    if(!title){ alert('Song title daalo.'); return; }
+    if(!title){ alert('Enter a song title.'); return; }
     songs.push({id, title, artist});
     document.getElementById('songTitle').value='';
     document.getElementById('songArtist').value='';
@@ -147,23 +201,25 @@
     const el = document.getElementById('shayariList');
     el.innerHTML = shayaris.map((s,i)=>`
       <div class="item">
-        <span>${s}</span>
+        <div class="info">${s}</div>
         <button class="danger" onclick="removeShayari(${i})">Remove</button>
       </div>`).join('');
     generateCode();
   }
   function addShayari(){
     const val = document.getElementById('shayariInput').value.trim();
-    if(!val){ alert('Shayari likho.'); return; }
+    if(!val){ alert('Write a shayari first.'); return; }
     shayaris.push(val);
     document.getElementById('shayariInput').value='';
     renderShayaris();
   }
   function removeShayari(i){ shayaris.splice(i,1); renderShayaris(); }
 
-  function updateCreator(){
-    const val = document.getElementById('creatorInput').value.trim();
-    if(val) creatorHandle = val;
+  function updateProfile(){
+    const c = document.getElementById('creatorInput').value.trim();
+    const ig = document.getElementById('igInput').value.trim();
+    if(c) creatorHandle = c;
+    if(ig) igLink = ig;
     generateCode();
   }
 
@@ -171,18 +227,21 @@
     const songsCode = songs.map(s => `  { id: "${s.id}", title: "${s.title}", artist: "${s.artist}" }`).join(',\n');
     const shayarisCode = shayaris.map(s => `  "${s}"`).join(',\n');
     const code =
-`/* ---- Paste this block over the SHAYARIS array in script.js ---- */
+`/* Paste this block over the SHAYARIS array in script.js */
 const shayaris = [
 ${shayarisCode}
 ];
 
-/* ---- Paste this block over the PLAYLIST array in script.js ---- */
+/* Paste this block over the PLAYLIST array in script.js */
 const playlist = [
 ${songsCode}
 ];
 
-/* ---- Creator credit: in index.html find id="creatorHandle" and change the text to: ---- */
-${creatorHandle}`;
+/* In index.html, find id="creatorHandle" and set: */
+Text: ${creatorHandle}
+
+/* In index.html, find id="igBtn" and set the href to: */
+${igLink}`;
     document.getElementById('codeOut').value = code;
   }
 
@@ -190,7 +249,7 @@ ${creatorHandle}`;
     const el = document.getElementById('codeOut');
     el.select();
     document.execCommand('copy');
-    alert('Code copy ho gaya! Ab script.js mein jaake paste kar do.');
+    alert('Code copied! Now paste it into your files on GitHub.');
   }
 
   renderSongs();
