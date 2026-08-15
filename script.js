@@ -80,9 +80,10 @@ setInterval(updateClock, 1000);
    id = the YouTube video ID (the part after "v=" in the video URL)
 ================================================================= */
 const playlist = [
-  { id: "A5G528i-OYY", title: "Kitaab", artist: "Shwet" },
-  { id: "REPLACE_WITH_VIDEO_ID", title: "Barsaat", artist: "" },
-  { id: "REPLACE_WITH_VIDEO_ID", title: "Bairan", artist: "" }
+  { id: "ebZj_nrmH-c", title: "Barsaat", artist: "Banjaare" },
+  { id: "oafxkMv4xnc", title: "Bairan", artist: "Banjaare" },
+  { id: "1uypbHj8-M", title: "KITAB", artist: "Mr Dutt ft Vipin Foji | Tanu Rawat" },
+  { id: "U0EI7XFkkV4", title: "Taare", artist: "Farak" }
 ];
 
 let currentTrack = 0;
