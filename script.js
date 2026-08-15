@@ -36,10 +36,15 @@ setInterval(showShayari, 8000);
    guide for exact steps — this is a one-time, free setup.
 ================================================================= */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID"
+  apiKey: "AIzaSyCjsP-50WtwtXp9-ecFz2gN-nlXv7cOUrs",
+  authDomain: "sukoon-1f380.firebaseapp.com",
+  databaseURL: "https://sukoon-1f380-default-rtdb.firebaseio.com",
+  projectId: "sukoon-1f380",
+  storageBucket: "sukoon-1f380.firebasestorage.app",
+  messagingSenderId: "1031908409160",
+  appId: "1:1031908409160:web:57bb7839b090d93f377d7d"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
