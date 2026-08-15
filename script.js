@@ -37,8 +37,12 @@ setInterval(showShayari, 8000);
 ================================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyCjsP-S0WtwXp9-ecFz2gN-mlXv7cOUrs",
+  authDomain: "sukoon-1f380.firebaseapp.com",
   databaseURL: "https://sukoon-1f380-default-rtdb.firebaseio.com",
-  projectId: "sukoon-1f380"
+  projectId: "sukoon-1f380",
+  storageBucket: "sukoon-1f380.firebasestorage.app",
+  messagingSenderId: "1031908409160",
+  appId: "1:1031908409160:web:57bb7839b090d93f377d7d"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
