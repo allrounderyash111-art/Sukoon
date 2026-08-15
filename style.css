@@ -35,7 +35,7 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 /* ---------- top-left: clock ---------- */
 .clock{
   position:absolute; top:4%; left:5%;
-  font-size:clamp(0.75rem, 1.4vw, 0.9rem);
+  font-size:clamp(0.78rem, 1.4vw, 0.9rem);
   color:var(--muted);
   letter-spacing:0.4px;
   text-shadow:0 1px 6px rgba(0,0,0,0.6);
@@ -43,21 +43,21 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 
 /* ---------- top-left: logo, just under the clock ---------- */
 .logo-block{
-  position:absolute; top:calc(4% + 26px); left:5%;
+  position:absolute; top:calc(4% + 28px); left:5%;
 }
 .title{
   font-family:'Baloo 2', sans-serif; font-weight:700;
-  font-size:clamp(1.4rem, 3.2vw, 2.1rem);
+  font-size:clamp(1.9rem, 3.2vw, 2.1rem);
   color:var(--text-cream);
   text-shadow:0 2px 14px rgba(0,0,0,0.6);
 }
-.tagline{ margin-top:2px; font-size:clamp(0.68rem, 1.2vw, 0.8rem); color:var(--muted); text-shadow:0 1px 6px rgba(0,0,0,0.6); }
+.tagline{ margin-top:2px; font-size:clamp(0.78rem, 1.2vw, 0.8rem); color:var(--muted); text-shadow:0 1px 6px rgba(0,0,0,0.6); }
 
 /* ---------- top-center: minimal live count ---------- */
 .live-pill{
   position:absolute; top:4%; left:50%; transform:translateX(-50%);
   display:flex; align-items:center; gap:6px;
-  font-size:clamp(0.7rem, 1.2vw, 0.82rem); color:var(--muted); white-space:nowrap;
+  font-size:clamp(0.72rem, 1.2vw, 0.82rem); color:var(--muted); white-space:nowrap;
   text-shadow:0 1px 6px rgba(0,0,0,0.6);
 }
 .dot-live{ width:6px; height:6px; border-radius:50%; background:#7be08a; box-shadow:0 0 6px 2px rgba(123,224,138,0.6); }
@@ -76,14 +76,13 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 }
 .icon-btn svg{ width:16px; height:16px; fill:var(--text-cream); }
 
-/* ---------- shayari line, just above the songbar, centered ---------- */
-.shayari-box, .shayari-line{ all:unset; }
+/* ---------- shayari line, sits above the songbar, centered ---------- */
 .shayari-line{
-  position:absolute; left:50%; bottom:104px; transform:translateX(-50%);
+  position:absolute; left:50%; bottom:150px; transform:translateX(-50%);
   display:block; width:90%; max-width:360px; text-align:center;
   font-family:'Tiro Devanagari Hindi', serif; font-style:italic; font-weight:400;
-  font-size:clamp(0.78rem, 1.5vw, 0.92rem);
-  line-height:1.55;
+  font-size:clamp(0.95rem, 1.6vw, 1rem);
+  line-height:1.6;
   color:var(--amber-hot);
   text-shadow:0 2px 10px rgba(0,0,0,0.8);
   opacity:0;
@@ -92,43 +91,97 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 }
 .shayari-line.show{ opacity:1; }
 
-/* ---------- minimal songbar, centered at bottom, not full-width ---------- */
+/* ---------- minimal songbar, centered near the bottom ---------- */
 .songbar{
-  position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+  position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
   z-index:20;
   display:flex; align-items:center; gap:10px;
   width:92%; max-width:360px;
-  padding:8px 12px;
+  padding:9px 13px;
   background:var(--card); backdrop-filter:blur(14px);
   border:1px solid var(--line);
   border-radius:999px;
 }
+
+/* ---------- rotating CD-style cover (no album art needed) ---------- */
 .cover{
-  width:32px; height:32px; border-radius:50%; flex:0 0 auto;
-  background:conic-gradient(from 200deg, var(--amber), #d98f86, #1b2b48, var(--amber));
+  width:34px; height:34px; border-radius:50%; flex:0 0 auto;
+  position:relative;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35), transparent 45%),
+    repeating-radial-gradient(circle at 50% 50%, #2b2b34 0px, #2b2b34 2px, #3c3c48 2px, #3c3c48 4px);
+  box-shadow:inset 0 0 5px rgba(0,0,0,0.7), 0 0 4px rgba(0,0,0,0.4);
+  animation:spinCover 6s linear infinite;
 }
+.cover::after{
+  content:'';
+  position:absolute; top:50%; left:50%; width:7px; height:7px;
+  background:#0c1a33; border-radius:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 0 2px rgba(255,255,255,0.18);
+}
+@keyframes spinCover{ to{ transform:rotate(360deg); } }
+
 .song-meta{ flex:1 1 auto; min-width:0; }
 .song-name{ font-size:0.76rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .song-artist{ font-size:0.66rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
-.progress{ margin-top:4px; height:2px; background:rgba(246,240,226,0.16); border-radius:2px; overflow:hidden; }
-.progress-fill{ height:100%; width:0%; background:var(--amber); }
+
+/* ---------- interactive, seekable progress bar ---------- */
+.progress{
+  position:relative;
+  margin-top:6px;
+  height:4px;
+  background:rgba(246,240,226,0.18);
+  border-radius:2px;
+  cursor:pointer;
+  /* invisible extra padding makes it much easier to tap/drag precisely */
+  padding:8px 0;
+  margin-bottom:-8px;
+  background-clip:content-box;
+}
+.progress-fill{
+  height:4px;
+  width:0%;
+  background:var(--amber);
+  border-radius:2px;
+  pointer-events:none;
+}
+.time-row{
+  display:flex; justify-content:space-between;
+  font-size:0.6rem; color:var(--muted);
+  margin-top:6px;
+}
 
 .ctrl-btn{
-  flex:0 0 auto; width:24px; height:24px; border-radius:50%;
+  flex:0 0 auto; width:26px; height:26px; border-radius:50%;
   background:transparent; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  position:relative;
 }
-.ctrl-btn svg{ width:13px; height:13px; fill:var(--text-cream); }
+.ctrl-btn svg{ width:13px; height:13px; fill:var(--text-cream); position:relative; z-index:1; }
 
 .play-btn{
-  flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+  flex:0 0 auto; width:32px; height:32px; border-radius:50%;
   background:var(--amber); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  position:relative;
 }
-.play-btn svg{ width:13px; height:13px; }
+.play-btn svg{ width:13px; height:13px; position:relative; z-index:1; }
+
+/* ---------- reliable click ring feedback (JS-triggered, always fires and always clears) ---------- */
+.ctrl-btn.pulse::before, .play-btn.pulse::before{
+  content:'';
+  position:absolute; inset:0; border-radius:50%;
+  box-shadow:0 0 0 0 rgba(240,176,100,0.7);
+  animation:btnring 0.45s ease-out;
+}
+@keyframes btnring{
+  0%{ box-shadow:0 0 0 0 rgba(240,176,100,0.7); }
+  100%{ box-shadow:0 0 0 9px rgba(240,176,100,0); }
+}
 
 #player{ position:absolute; width:0; height:0; overflow:hidden; }
 
 @media (min-width:900px){
-  .songbar{ max-width:420px; bottom:28px; padding:10px 16px; gap:12px; }
-  .shayari-line{ bottom:118px; max-width:420px; }
-  .cover{ width:36px; height:36px; }
+  .songbar{ max-width:420px; bottom:34px; padding:11px 17px; gap:12px; }
+  .shayari-line{ bottom:164px; max-width:420px; }
+  .cover{ width:38px; height:38px; }
 }

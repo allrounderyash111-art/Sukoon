@@ -36,13 +36,9 @@ setInterval(showShayari, 8000);
    guide for exact steps — this is a one-time, free setup.
 ================================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyCjsP-50WtwtXp9-ecFz2gN-nlXv7cOUrs",
-  authDomain: "sukoon-1f380.firebaseapp.com",
-  databaseURL: "https://sukoon-1f380-default-rtdb.firebaseio.com",
-  projectId: "sukoon-1f380",
-  storageBucket: "sukoon-1f380.firebasestorage.app",
-  messagingSenderId: "1031908409160",
-  appId: "1:1031908409160:web:57bb7839b090d93f377d7d"
+  apiKey: "YOUR_API_KEY",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -80,10 +76,9 @@ setInterval(updateClock, 1000);
    id = the YouTube video ID (the part after "v=" in the video URL)
 ================================================================= */
 const playlist = [
-  { id: "ebZj_nrmH-c", title: "Barsaat", artist: "Banjaare" },
-  { id: "oafxkMv4xnc", title: "Bairan", artist: "Banjaare" },
-  { id: "U0EI7XFkkV4", title: "Taare", artist: "Farak" },
-  { id: "1uypbHj8-Mk", title: "KITAB", artist: "Mr Dutt ft Vipin Foji | Tanu Rawat" }
+  { id: "A5G528i-OYY", title: "Kitaab", artist: "Shwet" },
+  { id: "REPLACE_WITH_VIDEO_ID", title: "Barsaat", artist: "" },
+  { id: "REPLACE_WITH_VIDEO_ID", title: "Bairan", artist: "" }
 ];
 
 let currentTrack = 0;
@@ -98,6 +93,9 @@ const songbar = document.getElementById('songbar');
 const trackNameEl = document.getElementById('trackName');
 const artistNameEl = document.getElementById('artistName');
 const progressFill = document.getElementById('progressFill');
+const progressBar = document.getElementById('progressBar');
+const curTimeEl = document.getElementById('curTime');
+const durTimeEl = document.getElementById('durTime');
 
 const tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -137,7 +135,15 @@ function loadTrack(index, autoplay) {
   }
 }
 
+/* ---------- reliable click-ring feedback on the buttons ---------- */
+function ringEffect(btn) {
+  btn.classList.remove('pulse');
+  void btn.offsetWidth; // forces the browser to acknowledge the removal so the animation can replay
+  btn.classList.add('pulse');
+}
+
 playBtn.addEventListener('click', () => {
+  ringEffect(playBtn);
   if (!player) return;
   if (isPlaying) {
     player.pauseVideo();
@@ -151,11 +157,13 @@ playBtn.addEventListener('click', () => {
 });
 
 prevBtn.addEventListener('click', () => {
+  ringEffect(prevBtn);
   const newIndex = (currentTrack - 1 + playlist.length) % playlist.length;
   loadTrack(newIndex, isPlaying);
 });
 
 nextBtn.addEventListener('click', () => {
+  ringEffect(nextBtn);
   const newIndex = (currentTrack + 1) % playlist.length;
   loadTrack(newIndex, isPlaying);
 });
@@ -175,12 +183,50 @@ function onPlayerStateChange(event) {
   }
 }
 
+/* ---------- time formatting ---------- */
+function formatTime(seconds) {
+  if (!isFinite(seconds) || seconds < 0) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+/* ---------- progress bar: shows real time, and is fully seekable
+   by tapping or dragging anywhere on it ---------- */
+let isSeeking = false;
+
+function seekFromPointer(clientX) {
+  if (!player || !player.getDuration) return;
+  const rect = progressBar.getBoundingClientRect();
+  let fraction = (clientX - rect.left) / rect.width;
+  fraction = Math.min(Math.max(fraction, 0), 1);
+  const duration = player.getDuration();
+  if (duration > 0) {
+    player.seekTo(duration * fraction, true);
+    progressFill.style.width = (fraction * 100) + '%';
+    curTimeEl.textContent = formatTime(duration * fraction);
+  }
+}
+
+progressBar.addEventListener('pointerdown', (e) => {
+  isSeeking = true;
+  seekFromPointer(e.clientX);
+});
+window.addEventListener('pointermove', (e) => {
+  if (isSeeking) seekFromPointer(e.clientX);
+});
+window.addEventListener('pointerup', () => {
+  isSeeking = false;
+});
+
 setInterval(() => {
-  if (player && player.getCurrentTime && isPlaying) {
+  if (player && player.getCurrentTime && !isSeeking) {
     const dur = player.getDuration();
     const cur = player.getCurrentTime();
     if (dur > 0) {
       progressFill.style.width = (cur / dur * 100) + '%';
+      curTimeEl.textContent = formatTime(cur);
+      durTimeEl.textContent = formatTime(dur);
     }
   }
-}, 1000);
+}, 500);
