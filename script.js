@@ -82,8 +82,8 @@ setInterval(updateClock, 1000);
 const playlist = [
   { id: "ebZj_nrmH-c", title: "Barsaat", artist: "Banjaare" },
   { id: "oafxkMv4xnc", title: "Bairan", artist: "Banjaare" },
-  { id: "1uypbHj8-M", title: "KITAB", artist: "Mr Dutt ft Vipin Foji | Tanu Rawat" },
-  { id: "U0EI7XFkkV4", title: "Taare", artist: "Farak" }
+  { id: "U0EI7XFkkV4", title: "Taare", artist: "Farak" },
+  { id: "1uypbHj8-Mk", title: "KITAB", artist: "Mr Dutt ft Vipin Foji | Tanu Rawat" }
 ];
 
 let currentTrack = 0;
