@@ -78,10 +78,10 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 
 /* ---------- shayari line, sits above the songbar, centered ---------- */
 .shayari-line{
-  position:absolute; left:50%; bottom:150px; transform:translateX(-50%);
+  position:absolute; left:50%; bottom:132px; transform:translateX(-50%);
   display:block; width:90%; max-width:360px; text-align:center;
   font-family:'Tiro Devanagari Hindi', serif; font-style:italic; font-weight:400;
-  font-size:clamp(0.95rem, 1.6vw, 1rem);
+  font-size:clamp(1.02rem, 1.8vw, 1.08rem);
   line-height:1.6;
   color:var(--amber-hot);
   text-shadow:0 2px 10px rgba(0,0,0,0.8);
@@ -95,9 +95,9 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 .songbar{
   position:absolute; left:50%; bottom:46px; transform:translateX(-50%);
   z-index:20;
-  display:flex; align-items:center; gap:10px;
-  width:92%; max-width:360px;
-  padding:9px 13px;
+  display:flex; align-items:center; gap:9px;
+  width:88%; max-width:340px;
+  padding:7px 12px;
   background:var(--card); backdrop-filter:blur(14px);
   border:1px solid var(--line);
   border-radius:999px;
@@ -130,17 +130,14 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 .progress{
   position:relative;
   margin-top:6px;
-  height:4px;
-  background:rgba(246,240,226,0.18);
+  height:3px;
+  background:rgba(246,240,226,0.28);
   border-radius:2px;
   cursor:pointer;
-  /* invisible extra padding makes it much easier to tap/drag precisely */
-  padding:8px 0;
-  margin-bottom:-8px;
-  background-clip:content-box;
 }
 .progress-fill{
-  height:4px;
+  position:absolute; left:0; top:0;
+  height:100%;
   width:0%;
   background:var(--amber);
   border-radius:2px;
@@ -181,7 +178,7 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 #player{ position:absolute; width:0; height:0; overflow:hidden; }
 
 @media (min-width:900px){
-  .songbar{ max-width:420px; bottom:34px; padding:11px 17px; gap:12px; }
-  .shayari-line{ bottom:164px; max-width:420px; }
+  .songbar{ max-width:400px; bottom:34px; padding:9px 15px; gap:11px; }
+  .shayari-line{ bottom:146px; max-width:420px; }
   .cover{ width:38px; height:38px; }
 }
