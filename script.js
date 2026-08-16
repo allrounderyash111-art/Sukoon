@@ -120,6 +120,57 @@ const tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
 
+/* ================================================================
+   RESUME EXACTLY WHERE THE VISITOR LEFT OFF
+   Remembers which song AND the exact second, per visitor's browser —
+   like Spotify. Saved a few times a second while playing, and once
+   more when the tab is closed, so nothing is lost.
+================================================================= */
+const savedTrack = parseInt(localStorage.getItem('sukoon_lastTrack'), 10);
+const savedTime = parseFloat(localStorage.getItem('sukoon_lastTime'));
+let pendingResumeTime = 0;
+
+if (!isNaN(savedTrack) && savedTrack >= 0 && savedTrack < playlist.length) {
+  currentTrack = savedTrack;
+  if (!isNaN(savedTime) && savedTime > 0) {
+    pendingResumeTime = savedTime;
+  }
+}
+
+function saveProgress() {
+  localStorage.setItem('sukoon_lastTrack', currentTrack);
+  if (player && player.getCurrentTime) {
+    const t = player.getCurrentTime();
+    if (t > 0) localStorage.setItem('sukoon_lastTime', t);
+  }
+}
+window.addEventListener('pagehide', saveProgress);
+window.addEventListener('beforeunload', saveProgress);
+
+/* ================================================================
+   SHUFFLE
+================================================================= */
+let isShuffle = false;
+let shuffleHistory = [];
+const shuffleBtn = document.getElementById('shuffleBtn');
+
+function pickRandomIndex(excludeIndex) {
+  if (playlist.length <= 1) return excludeIndex;
+  let idx;
+  do {
+    idx = Math.floor(Math.random() * playlist.length);
+  } while (idx === excludeIndex);
+  return idx;
+}
+
+if (shuffleBtn) {
+  shuffleBtn.addEventListener('click', () => {
+    isShuffle = !isShuffle;
+    shuffleBtn.classList.toggle('active', isShuffle);
+    shuffleHistory = [];
+  });
+}
+
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '0',
@@ -128,7 +179,13 @@ function onYouTubeIframeAPIReady() {
     playerVars: { autoplay: 0, controls: 0 },
     events: {
       onStateChange: onPlayerStateChange,
-      onReady: () => { updateTrackInfo(); }
+      onReady: () => {
+        updateTrackInfo();
+        if (pendingResumeTime > 0) {
+          player.seekTo(pendingResumeTime, true);
+          pendingResumeTime = 0;
+        }
+      }
     }
   });
 }
@@ -138,7 +195,7 @@ function updateTrackInfo() {
   artistNameEl.textContent = playlist[currentTrack].artist || '';
 }
 
-function loadTrack(index, autoplay) {
+function loadTrack(index, autoplay, seekSeconds) {
   if (playlist[index].id === "REPLACE_WITH_VIDEO_ID") {
     alert("This slot is empty — use admin.html to generate the code and paste it into script.js.");
     return;
@@ -147,9 +204,9 @@ function loadTrack(index, autoplay) {
   updateTrackInfo();
   if (player && player.loadVideoById) {
     if (autoplay) {
-      player.loadVideoById(playlist[currentTrack].id);
+      player.loadVideoById(playlist[currentTrack].id, seekSeconds || 0);
     } else {
-      player.cueVideoById(playlist[currentTrack].id);
+      player.cueVideoById(playlist[currentTrack].id, seekSeconds || 0);
     }
   }
 }
@@ -177,14 +234,26 @@ playBtn.addEventListener('click', () => {
 
 prevBtn.addEventListener('click', () => {
   ringEffect(prevBtn);
-  const newIndex = (currentTrack - 1 + playlist.length) % playlist.length;
-  loadTrack(newIndex, isPlaying);
+  if (isShuffle && shuffleHistory.length > 0) {
+    const prevIndex = shuffleHistory.pop();
+    loadTrack(prevIndex, isPlaying);
+  } else if (isShuffle) {
+    loadTrack(pickRandomIndex(currentTrack), isPlaying);
+  } else {
+    const newIndex = (currentTrack - 1 + playlist.length) % playlist.length;
+    loadTrack(newIndex, isPlaying);
+  }
 });
 
 nextBtn.addEventListener('click', () => {
   ringEffect(nextBtn);
-  const newIndex = (currentTrack + 1) % playlist.length;
-  loadTrack(newIndex, isPlaying);
+  if (isShuffle) {
+    shuffleHistory.push(currentTrack);
+    loadTrack(pickRandomIndex(currentTrack), isPlaying);
+  } else {
+    const newIndex = (currentTrack + 1) % playlist.length;
+    loadTrack(newIndex, isPlaying);
+  }
 });
 
 function onPlayerStateChange(event) {
@@ -197,8 +266,13 @@ function onPlayerStateChange(event) {
     songbar.classList.remove('playing');
     playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
   } else if (event.data === YT.PlayerState.ENDED) {
-    const newIndex = (currentTrack + 1) % playlist.length;
-    loadTrack(newIndex, true);
+    if (isShuffle) {
+      shuffleHistory.push(currentTrack);
+      loadTrack(pickRandomIndex(currentTrack), true);
+    } else {
+      const newIndex = (currentTrack + 1) % playlist.length;
+      loadTrack(newIndex, true);
+    }
   }
 }
 
@@ -246,6 +320,8 @@ setInterval(() => {
       progressFill.style.width = (cur / dur * 100) + '%';
       curTimeEl.textContent = formatTime(cur);
       durTimeEl.textContent = formatTime(dur);
+      localStorage.setItem('sukoon_lastTrack', currentTrack);
+      localStorage.setItem('sukoon_lastTime', cur);
     }
   }
 }, 500);

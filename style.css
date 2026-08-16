@@ -156,6 +156,13 @@ html,body{height:100%; background:#05070d; color:var(--text-cream); font-family:
 }
 .ctrl-btn svg{ width:13px; height:13px; fill:var(--text-cream); position:relative; z-index:1; }
 
+/* ---------- shuffle button: dim when off, amber + subtle glow when on ---------- */
+#shuffleBtn{ width:22px; height:22px; opacity:0.5; transition:opacity 0.2s ease; }
+#shuffleBtn svg{ width:12px; height:12px; transition:fill 0.2s ease; }
+#shuffleBtn.active{ opacity:1; }
+#shuffleBtn.active svg{ fill:var(--amber); }
+#shuffleBtn.active{ filter:drop-shadow(0 0 4px rgba(240,176,100,0.55)); }
+
 .play-btn{
   flex:0 0 auto; width:32px; height:32px; border-radius:50%;
   background:var(--amber); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
